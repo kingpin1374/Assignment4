@@ -1,2 +1,2 @@
 # Assignment 4
-![image](https://pixabay.com/images/search/github%20copilot/)
+![image](https://pngimg.com/uploads/github/github_PNG40.png)
