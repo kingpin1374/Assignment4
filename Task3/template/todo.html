@@ -86,6 +86,13 @@
             min-height: 100px;
         }
 
+        .muted {
+            display: block;
+            margin-top: 0.35rem;
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+        }
+
         button {
             width: 100%;
             padding: 0.75rem;
@@ -125,8 +132,15 @@
     <form action="/submittodoitem" method="POST">
         <div class="form-group">
             <label for="itemID">Item ID</label>
-            <input type="text" id="itemID" name="itemID" placeholder="Item ID" required>
+            <input type="text" id="itemID" name="itemID" placeholder="Item ID" readonly>
+            <span class="muted">Auto-generated on page load</span>
         </div>
+        <div class="form-group">
+            <label for="itemUUID">Item UUID</label>
+            <input type="text" id="itemUUID" name="itemUUID" placeholder="Item UUID" readonly>
+            <span class="muted">Auto-generated on page load</span>
+        </div>
+
 
         <div class="form-group">
             <label for="itemName">Item Name</label>
@@ -143,5 +157,21 @@
     </form>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var idInput = document.getElementById('itemID');
+    var uuidInput = document.getElementById('itemUUID');
+    if (idInput && !idInput.value) {
+        idInput.value = Date.now().toString();
+    }
+    if (uuidInput && !uuidInput.value) {
+        if (window.crypto && crypto.randomUUID) {
+            uuidInput.value = crypto.randomUUID();
+        } else {
+            uuidInput.value = 'uuid-' + Math.random().toString(36).slice(2, 10);
+        }
+    }
+});
+</script>
 </body>
 </html>
