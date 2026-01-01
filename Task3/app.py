@@ -58,18 +58,16 @@ def submit_todo_item():
             return jsonify({'error': 'Database unavailable'}), 503
 
         item_id = request.form.get('itemID', '').strip()
-        item_uuid = request.form.get('itemUUID', '').strip()
         item_name = request.form.get('itemName', '').strip()
         item_description = request.form.get('itemDescription', '').strip()
 
         # Validate input
-        if not item_id or not item_uuid or not item_name or not item_description:
-            return jsonify({'error': 'All fields (ID, UUID, name, description) are required'}), 400
+        if not item_id or not item_name or not item_description:
+            return jsonify({'error': 'All fields (ID, name, description) are required'}), 400
 
         # Create and insert document
         todo_item = {
             'itemID': item_id,
-            'itemUUID': item_uuid,
             'itemName': item_name,
             'itemDescription': item_description
         }
