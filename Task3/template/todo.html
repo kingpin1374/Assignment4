@@ -137,6 +137,18 @@
         </div>
 
         <div class="form-group">
+            <label for="itemUUID">Item UUID</label>
+            <input type="text" id="itemUUID" name="itemUUID" placeholder="Item UUID" readonly>
+            <span class="muted">Auto-generated on page load</span>
+        </div>
+
+        <div class="form-group">
+            <label for="itemHash">Item Hash</label>
+            <input type="text" id="itemHash" name="itemHash" placeholder="Item Hash" readonly>
+            <span class="muted">Auto-generated on page load</span>
+        </div>
+
+        <div class="form-group">
             <label for="itemName">Item Name</label>
             <input type="text" id="itemName" name="itemName" placeholder="e.g., Buy groceries" required>
         </div>
@@ -152,11 +164,48 @@
 </div>
 
 <script>
+async function generateHash(data) {
+    const encoder = new TextEncoder();
+    const dataBuffer = encoder.encode(data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     var idInput = document.getElementById('itemID');
+    var uuidInput = document.getElementById('itemUUID');
+    var hashInput = document.getElementById('itemHash');
+    var nameInput = document.getElementById('itemName');
+
     if (idInput && !idInput.value) {
         idInput.value = Date.now().toString();
     }
+    if (uuidInput && !uuidInput.value) {
+        if (window.crypto && crypto.randomUUID) {
+            uuidInput.value = crypto.randomUUID();
+        } else {
+            uuidInput.value = 'uuid-' + Math.random().toString(36).slice(2, 10);
+        }
+    }
+
+    // Generate hash when ID, UUID, or Name changes
+    async function updateHash() {
+        if (idInput && uuidInput && nameInput && hashInput) {
+            const combinedData = (idInput.value || '') + (uuidInput.value || '') + (nameInput.value || '');
+            const hash = await generateHash(combinedData);
+            hashInput.value = hash;
+        }
+    }
+
+    // Update hash on input change
+    if (idInput) idInput.addEventListener('change', updateHash);
+    if (uuidInput) uuidInput.addEventListener('change', updateHash);
+    if (nameInput) nameInput.addEventListener('input', updateHash);
+
+    // Generate initial hash
+    updateHash();
 });
 </script>
 </body>
